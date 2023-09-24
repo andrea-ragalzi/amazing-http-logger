@@ -12,7 +12,17 @@ services:
     volumes:
       - mongo:/data/db
     ports:
-      - "8000:8000"
-
+      - '6000:27017'
+  api:
+    build: .
+    container_name: api
+    ports:
+      - '8000:80'
+    volumes:
+      - ./app:/app
+    depends_on:
+      - mongo
+    env_file:
+      - ./.env
 volumes:
   mongo:
