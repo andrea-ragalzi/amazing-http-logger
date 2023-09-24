@@ -35,11 +35,11 @@ from bson import ObjectId
 
 from fastapi import APIRouter, Depends, HTTPException, status
 
-from app import schemas
-from app.database import Log, User
-from app.schemas import LogSchema
-from app.serializers.logSerializers import logResponseEntity
-from app.utils import get_current_user
+import schemas
+from database import Log, User
+from schemas import LogSchema
+from serializers.logSerializers import logResponseEntity
+from utils import get_current_user
 
 router = APIRouter()
 

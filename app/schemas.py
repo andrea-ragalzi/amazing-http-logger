@@ -31,7 +31,7 @@ from pydantic import (BaseModel, EmailStr,  # pylint: disable=no-name-in-module
 
 class UserBaseSchema(BaseModel):
     name: str
-    email: str
+    email: EmailStr
     photo: str
     role: str | None = None
     created_at: datetime | None = None

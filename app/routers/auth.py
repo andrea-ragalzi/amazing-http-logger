@@ -47,11 +47,11 @@ from datetime import datetime, timedelta
 from bson.objectid import ObjectId
 from fastapi import APIRouter, Response, status, Depends, HTTPException
 
-from app.database import Log, User
-from app.serializers.userSerializers import userEntity, userResponseEntity
-from app import schemas, utils
-from app.oauth2 import AuthJWT
-from app.config import settings
+from database import Log, User
+from serializers.userSerializers import userEntity, userResponseEntity
+import schemas, utils
+from oauth2 import AuthJWT
+from config import settings
 
 
 router = APIRouter()
@@ -173,7 +173,7 @@ def refresh_token(response: Response, authorize: AuthJWT = Depends()):
         authorize.jwt_refresh_token_required()
         user_id = authorize.get_jwt_subject()
         if not user_id:
-            new_log.status_code = status.HTTP_401_UNauthorizeD
+            new_log.status_code = status.HTTP_401_UNAUTHORIZED
             Log.insert_one(new_log.dict())
             raise HTTPException(status_code=new_log.status_code,
                                 detail='Could not refresh access token')
@@ -181,7 +181,7 @@ def refresh_token(response: Response, authorize: AuthJWT = Depends()):
         user = userEntity(db_user)
         new_log.userID = db_user.get('_id')
         if not user:
-            new_log.status_code = status.HTTP_401_UNauthorizeD
+            new_log.status_code = status.HTTP_401_UNAUTHORIZED
             Log.insert_one(new_log.dict())
             raise HTTPException(
                 status_code=new_log.status_code,

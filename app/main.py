@@ -23,8 +23,8 @@ Routes:
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.config import settings
-from app.routers import auth, user, log
+from config import settings
+from routers import auth, user, log
 
 app = FastAPI()
 

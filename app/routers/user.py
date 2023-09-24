@@ -27,11 +27,11 @@ API Routes:
 
 from fastapi import APIRouter, Depends
 from bson.objectid import ObjectId
-from app.serializers.userSerializers import userResponseEntity
+from serializers.userSerializers import userResponseEntity
 
-from app.database import User
-from app import schemas
-from app.oauth2 import require_user
+from database import User
+import schemas
+from oauth2 import require_user
 
 router = APIRouter()
 

@@ -25,7 +25,7 @@ Functions:
 from fastapi import Depends
 from passlib.context import CryptContext
 
-from app.oauth2 import AuthJWT
+from oauth2 import AuthJWT
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 

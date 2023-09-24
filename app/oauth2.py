@@ -39,10 +39,10 @@ from fastapi import Depends, HTTPException, status
 from fastapi_jwt_auth import AuthJWT
 from pydantic import BaseModel  # pylint: disable=no-name-in-module
 
-from app.serializers.userSerializers import userEntity
+from serializers.userSerializers import userEntity
 
-from .config import settings
-from .database import User
+from config import settings
+from database import User
 
 
 class Settings(BaseModel):
@@ -88,18 +88,18 @@ def require_user(authorize: AuthJWT = Depends()):
         print(error)
         if error == 'MissingTokenError':
             raise HTTPException(
-                status_code=status.HTTP_401_UNauthorizeD,
+                status_code=status.HTTP_401_UNAUTHORIZED,
                 detail='You are not logged in') from err
         if error == 'UserNotFound':
             raise HTTPException(
-                status_code=status.HTTP_401_UNauthorizeD,
+                status_code=status.HTTP_401_UNAUTHORIZED,
                 detail='User no longer exist') from err
         if error == 'NotVerified':
             raise HTTPException(
-                status_code=status.HTTP_401_UNauthorizeD,
+                status_code=status.HTTP_401_UNAUTHORIZED,
                 detail='Please verify your account') from err
         raise HTTPException(
-            status_code=status.HTTP_401_UNauthorizeD,
+            status_code=status.HTTP_401_UNAUTHORIZED,
             detail='Token is invalid or has expired') from err
     return user_id
 
