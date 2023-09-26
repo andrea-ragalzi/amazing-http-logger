@@ -39,10 +39,9 @@ from fastapi import Depends, HTTPException, status
 from fastapi_jwt_auth import AuthJWT
 from pydantic import BaseModel  # pylint: disable=no-name-in-module
 
-from serializers.userSerializers import userEntity
-
 from config import settings
 from database import User
+from serializers.userSerializers import userEntity
 
 
 class Settings(BaseModel):
@@ -58,7 +57,7 @@ class Settings(BaseModel):
         settings.JWT_PRIVATE_KEY).decode('utf-8')
 
 
-@AuthJWT.load_config
+@AuthJWT.load_config  # type: ignore
 def get_config():
     return Settings()
 
