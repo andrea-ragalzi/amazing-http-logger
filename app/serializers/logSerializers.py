@@ -18,11 +18,12 @@ def logEntity(log) -> dict:
     return {
         "id": str(log["_id"]),
         "created_at": log["created_at"],
+        "updated_at": log["updated_at"],
         "request_type": log["request_type"],
         "url": log["url"],
         "client_ip": log["client_ip"],
         "status_code": log["status_code"],
-        "userID": log["userID"]
+        "user": log["user"]
     }
 
 
@@ -30,11 +31,12 @@ def logResponseEntity(log) -> dict:
     return {
         "id": str(log["_id"]),
         "created_at": log["created_at"],
+        "updated_at": log["updated_at"],
         "request_type": log["request_type"],
         "url": log["url"],
         "client_ip": log["client_ip"],
         "status_code": log["status_code"],
-        "userID": log["userID"]
+        "user": log["user"]
     }
 
 
