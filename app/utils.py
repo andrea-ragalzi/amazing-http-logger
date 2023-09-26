@@ -22,10 +22,11 @@ Functions:
 
 """
 
+from bson import ObjectId
+from database import User
 from fastapi import Depends
-from passlib.context import CryptContext
-
 from oauth2 import AuthJWT
+from passlib.context import CryptContext
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -42,6 +43,7 @@ def get_current_user(authorize: AuthJWT = Depends()):
     try:
         authorize.jwt_required()
         user_id = authorize.get_jwt_subject()
-        return user_id
+        user = User.find_one({'_id': ObjectId(str(user_id))})
+        return user
     except Exception:  # pylint: disable=broad-except
         return None
