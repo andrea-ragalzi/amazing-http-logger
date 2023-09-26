@@ -29,15 +29,15 @@ Routes:
 
 """
 
-from typing import Optional
 from datetime import datetime
-from bson import ObjectId
-
-from fastapi import APIRouter, Depends, HTTPException, status
+from typing import Optional
 
 import schemas
+from bson import ObjectId
 from database import Log, User
-from schemas import LogSchema
+from fastapi import APIRouter, Depends, HTTPException, Request, status
+from oauth2 import require_user
+from schemas import CreateLogSchema, UserResponseSchema
 from serializers.logSerializers import logResponseEntity
 from utils import get_current_user
 
@@ -46,17 +46,38 @@ router = APIRouter()
 
 @router.post('', response_model=schemas.LogResponse,
              status_code=status.HTTP_201_CREATED)
-async def create_log(payload: LogSchema,
-                     current_user: User = Depends(get_current_user)):
-    if not current_user:
+async def create_log(payload: CreateLogSchema,
+                     request: Request,
+                     user_id: str = Depends(require_user)):
+    new_log = schemas.LogSchema(
+        request_type=payload.request_type,
+        url=payload.url,
+        client_ip=None,
+        status_code=payload.status_code,
+        user=None,
+        created_at=datetime.utcnow(),
+        updated_at=datetime.utcnow()
+    )
+    if request.client:
+        new_log.client_ip = request.client.host
+    db_user = User.find_one({'_id': ObjectId(user_id)})
+    if not db_user:
+        Log.insert_one(new_log.dict())
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="User not authorized")
-    payload.created_at = datetime.utcnow()
-    payload.userID = current_user
-    result = Log.insert_one(payload.dict())
-    new_log = logResponseEntity(Log.find_one({'_id': result.inserted_id}))
-    return {"status": "success", "log": new_log}
+    new_log.user = UserResponseSchema(
+        id=str(db_user["_id"]),
+        name=db_user["name"],
+        email=db_user["email"],
+        photo=db_user["photo"],
+        role=db_user["role"],
+        created_at=db_user["created_at"],
+        updated_at=db_user["updated_at"]
+    )
+    result = Log.insert_one(new_log.dict())
+    response_log = logResponseEntity(Log.find_one({'_id': result.inserted_id}))
+    return {"status": "success", "log": response_log}
 
 
 @router.get('', response_model=schemas.LogsResponse,
@@ -65,7 +86,7 @@ async def get_logs(
     userID: Optional[str] = None,
     order_by: Optional[str] = "created_at",
     ascending: Optional[bool] = False,
-    current_user: User = Depends(get_current_user)
+    current_user=Depends(get_current_user)
 ):
     sort_option = [(order_by, 1 if ascending else -1)]
 
@@ -80,9 +101,9 @@ async def get_logs(
             detail="User not logged in"
         )
 
-    logs = list(Log.find(filter_query).sort(sort_option))
+    logs = list(Log.find(filter_query).sort(sort_option))  # type: ignore
 
     for log in logs:
-        log['userID'] = str(log['userID'])
+        log['user'] = str(log['user'])
 
     return {"status": "success", "logs": logs}
