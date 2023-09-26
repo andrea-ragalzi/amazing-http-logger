@@ -25,31 +25,30 @@ Models:
 
 from datetime import datetime
 
-from pydantic import (BaseModel, EmailStr,  # pylint: disable=no-name-in-module
-                      constr)
+from pydantic import BaseModel, EmailStr, constr
 
 
 class UserBaseSchema(BaseModel):
     name: str
     email: EmailStr
     photo: str
-    role: str | None = None
-    created_at: datetime | None = None
-    updated_at: datetime | None = None
+    role: str
+    created_at: datetime
+    updated_at: datetime
 
     class Config:
         orm_mode = True
 
 
 class CreateUserSchema(UserBaseSchema):
-    password: constr(min_length=8)
+    password: constr(min_length=8)  # type: ignore
     passwordConfirm: str
     verified: bool = False
 
 
 class LoginUserSchema(BaseModel):
     email: EmailStr
-    password: constr(min_length=8)
+    password: constr(min_length=8)  # type: ignore
 
 
 class UserResponseSchema(UserBaseSchema):
@@ -62,15 +61,17 @@ class UserResponse(BaseModel):
 
 
 class LogSchema(BaseModel):
-    created_at: datetime | None = None
     request_type: str
     url: str
-    client_ip: str
+    client_ip: str | None
     status_code: int
-    userID: str | None = None
+    created_at: datetime
+    updated_at: datetime
+    user: UserResponseSchema | None
 
     class Config:
         orm_mode = True
+        arbitrary_types_allowed = True
 
 
 class LogResponseSchema(LogSchema):
@@ -85,3 +86,12 @@ class LogResponse(BaseModel):
 class LogsResponse(BaseModel):
     status: str
     logs: list[LogSchema]
+    
+class CreateLogSchema(BaseModel):
+    request_type: str
+    url: str
+    status_code: int
+    
+    class Config:
+        orm_mode = True
+        arbitrary_types_allowed = True
