@@ -21,8 +21,9 @@ Variables:
 
 """
 
-from pymongo import mongo_client
 import pymongo
+from pymongo import mongo_client
+
 from config import settings
 
 client = mongo_client.MongoClient(
